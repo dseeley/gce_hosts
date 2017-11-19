@@ -85,7 +85,7 @@ def main():
         instances = gce.list_nodes(ex_zone=zone)
         if instance_pattern:
             if not instances:
-                module.exit_json(changed=False, zone=zone, instances_found=[])
+                module.exit_json(changed=False, zone=zone, instances=[])
             try:
                 p = re.compile(instance_pattern)
                 matching_nodes = [i for i in instances if p.search(i.name) is not None]
@@ -98,9 +98,9 @@ def main():
 
     instance_pattern_matches = []
     for node in matching_nodes:
-        instance_pattern_matches.append(node.name)
+        instance_pattern_matches.append({'name': node.name, 'public_ips': node.public_ips, 'private_ips': node.private_ips, 'state': node.state})
 
-    module.exit_json(changed=False, instance_pattern=instance_pattern, zone=zone, instances_found=instance_pattern_matches, all_nodes=str(matching_nodes))
+    module.exit_json(changed=False, instance_pattern=instance_pattern, zone=zone, instances=instance_pattern_matches, raw=str(matching_nodes))
 
 
 if __name__ == '__main__':
